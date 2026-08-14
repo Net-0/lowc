@@ -1,0 +1,15 @@
+
+function doSomething() {
+    let myVariable1: u8 = 32;
+    let myVariable2!: i16 = -133;
+    let myVariable3: i32 = 534;
+    let myVariable4!: u64 = 835;
+}
+
+function doSomething2(param1: i8, param2!: u16, param3: u32, param4!: i64) {
+
+}
+
+function doSomething3(): i32 {
+    return -1;
+}

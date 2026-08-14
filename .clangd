@@ -1,0 +1,9 @@
+CompileFlags:
+  Add:
+    - -ffreestanding
+    - -fno-builtin
+    - -fno-stack-protector
+    - -nostdlib
+    - -static
+    - -Wswitch-enum -Werror=switch-enum
+    - -fms-extensions

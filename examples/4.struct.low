@@ -1,0 +1,40 @@
+
+struct MyStruct1 {
+    myField1: i8;
+    myField2!: u16;
+}
+
+struct MyStruct2 {
+
+    myMethod1() {
+
+    }
+
+    myMethod2(param1: u64, param2!: u32) {
+
+    }
+
+    myMethod3(): u32 {
+        return 9;
+    }
+
+}
+
+struct MyStruct3 {
+    myField1: i8;
+    myField2!: i16;
+    myField2: u32;
+    myField2!: u64;
+
+    myMethod1() {
+
+    }
+
+    myMethod2(param1: u64, param2!: u32) {
+
+    }
+
+    myMethod3(): u32 {
+        return 9;
+    }
+}

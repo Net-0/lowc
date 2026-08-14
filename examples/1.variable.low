@@ -1,0 +1,5 @@
+
+let myVariable1: u8 = 32;
+let myVariable2!: i16 = -133;
+let myVariable3: i32 = 534;
+let myVariable4!: u64 = 835;
