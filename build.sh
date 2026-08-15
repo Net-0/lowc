@@ -15,6 +15,7 @@ for src in "$input_dir"/*.c; do
         -static \
         -Wswitch-enum -Werror=switch-enum \
         -fms-extensions \
+        -O3 \
         -Wl,-e,_start,-z,stack-size=536870912 \
         "$src" \
         -o "$output_dir/$name"
