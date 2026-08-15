@@ -1,5 +1,5 @@
-#ifndef LIB_C
-#define LIB_C
+#ifndef LINUX_C
+#define LINUX_C
 
 #include "./types.c"
 
@@ -27,7 +27,7 @@ isize write(const i32 fileDescriptor, const byte* buffer, const usize count) {
   return ret;
 }
 
-// Linux exit syscall
+// Linux 'exit' syscall
 void exit(const u8 code) {
   __asm__ volatile (
     "syscall"

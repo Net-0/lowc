@@ -32,79 +32,79 @@ enum TokenType {
     // TODO: add colon, semicolon, comma and other stuf
 };
 
-void TokenType_write(const TokenType tokenType, const i32 fileDescriptor) {
+void TokenType_write(const TokenType tokenType, Writer* writer) {
     switch (tokenType) {
         case NO_TOKEN:
-            writeString(fileDescriptor, "NO_TOKEN");
+            Writer_writeString(writer, "NO_TOKEN");
             break;
         case UNEXPECTED:
-            writeString(fileDescriptor, "UNEXPECTED");
+            Writer_writeString(writer, "UNEXPECTED");
             break;
         case SINGLE_LINE_COMMENT:
-            writeString(fileDescriptor, "SINGLE_LINE_COMMENT");
+            Writer_writeString(writer, "SINGLE_LINE_COMMENT");
             break;
         case MULTI_LINE_COMMENT:
-            writeString(fileDescriptor, "MULTI_LINE_COMMENT");
+            Writer_writeString(writer, "MULTI_LINE_COMMENT");
             break;
         case DOCUMENTATION:
-            writeString(fileDescriptor, "DOCUMENTATION");
+            Writer_writeString(writer, "DOCUMENTATION");
             break;
         case WORD:
-            writeString(fileDescriptor, "WORD");
+            Writer_writeString(writer, "WORD");
             break;
         case NUMBER:
-            writeString(fileDescriptor, "NUMBER");
+            Writer_writeString(writer, "NUMBER");
             break;
         case STRING:
-            writeString(fileDescriptor, "STRING");
+            Writer_writeString(writer, "STRING");
             break;
         case CHAR:
-            writeString(fileDescriptor, "CHAR");
+            Writer_writeString(writer, "CHAR");
             break;
         case OPEN_ROUND_BRACKET:
-            writeString(fileDescriptor, "OPEN_ROUND_BRACKET");
+            Writer_writeString(writer, "OPEN_ROUND_BRACKET");
             break;
         case CLOSE_ROUND_BRACKET:
-            writeString(fileDescriptor, "CLOSE_ROUND_BRACKET");
+            Writer_writeString(writer, "CLOSE_ROUND_BRACKET");
             break;
         case OPEN_SQUARE_BRACKET:
-            writeString(fileDescriptor, "OPEN_SQUARE_BRACKET");
+            Writer_writeString(writer, "OPEN_SQUARE_BRACKET");
             break;
         case CLOSE_SQUARE_BRACKET:
-            writeString(fileDescriptor, "CLOSE_SQUARE_BRACKET");
+            Writer_writeString(writer, "CLOSE_SQUARE_BRACKET");
             break;
         case OPEN_CURLY_BRACKET:
-            writeString(fileDescriptor, "OPEN_CURLY_BRACKET");
+            Writer_writeString(writer, "OPEN_CURLY_BRACKET");
             break;
         case CLOSE_CURLY_BRACKET:
-            writeString(fileDescriptor, "CLOSE_CURLY_BRACKET");
+            Writer_writeString(writer, "CLOSE_CURLY_BRACKET");
             break;
         case COLON:
-            writeString(fileDescriptor, "COLON");
+            Writer_writeString(writer, "COLON");
             break;
         case SEMICOLON:
-            writeString(fileDescriptor, "SEMICOLON");
+            Writer_writeString(writer, "SEMICOLON");
             break;
         case COMMA:
-            writeString(fileDescriptor, "COMMA");
+            Writer_writeString(writer, "COMMA");
             break;
         case EQUAL:
-            writeString(fileDescriptor, "EQUAL");
+            Writer_writeString(writer, "EQUAL");
             break;
         case EXCLAMATION:
-            writeString(fileDescriptor, "EXCLAMATION");
+            Writer_writeString(writer, "EXCLAMATION");
             break;
         case PLUS:
-            writeString(fileDescriptor, "PLUS");
+            Writer_writeString(writer, "PLUS");
             break;
         case MINUS:
-            writeString(fileDescriptor, "MINUS");
+            Writer_writeString(writer, "MINUS");
             break;
         case STAR:
-            writeString(fileDescriptor, "STAR");
+            Writer_writeString(writer, "STAR");
             break;
         case SLASH:
-            writeString(fileDescriptor, "SLASH");
+            Writer_writeString(writer, "SLASH");
             break;
     }
 }
@@ -119,19 +119,19 @@ enum KeywordType {
     STRUCT,
 };
 
-void KeywordType_write(const KeywordType keywordType, const i32 fileDescriptor) {
+void KeywordType_write(const KeywordType keywordType, Writer* writer) {
     switch (keywordType) {
         case NaK:
-            writeString(fileDescriptor, "NaK");
+            Writer_writeString(writer, "NaK");
             break;
         case LET:
-            writeString(fileDescriptor, "LET");
+            Writer_writeString(writer, "LET");
             break;
         case FUNCTION:
-            writeString(fileDescriptor, "FUNCTION");
+            Writer_writeString(writer, "FUNCTION");
             break;
         case STRUCT:
-            writeString(fileDescriptor, "STRUCT");
+            Writer_writeString(writer, "STRUCT");
             break;
     }
 }
@@ -148,16 +148,16 @@ struct Token {
 
 const Token _NO_TOKEN_ = { .type = NO_TOKEN, .start = NO_POSITION, .end = NO_POSITION };
 
-void Token_write(const Token* token, const i32 fileDescriptor) {
-    writeString(fileDescriptor, "Token(type=");
-    TokenType_write(token->type, fileDescriptor);
-    writeString(fileDescriptor, ", keywordType=");
-    KeywordType_write(token->keywordType, fileDescriptor);
-    writeString(fileDescriptor, ", start=");
-    Position_write(&token->start, fileDescriptor);
-    writeString(fileDescriptor, ", end=");
-    Position_write(&token->end, fileDescriptor);
-    writeString(fileDescriptor, ")");
+void Token_write(const Token* token, Writer* writer) {
+    Writer_writeString(writer, "Token(type=");
+    TokenType_write(token->type, writer);
+    Writer_writeString(writer, ", keywordType=");
+    KeywordType_write(token->keywordType, writer);
+    Writer_writeString(writer, ", start=");
+    Position_write(&token->start, writer);
+    Writer_writeString(writer, ", end=");
+    Position_write(&token->end, writer);
+    Writer_writeString(writer, ")");
 }
 
 #endif
