@@ -20,7 +20,7 @@ struct Writer {
 void Writer_flush(Writer* writer) {
     const i32 result = write(writer->fileDescriptor, writer->buffer, writer->bufferIndex);
     if (result < 0)
-        exit(EXIT_IO_WRITER_FAILURE);
+        exit(EXIT_IO_WRITER_BAD_FLUSH);
     writer->bufferIndex = 0;
 }
 
@@ -92,14 +92,14 @@ boolean Reader_hasNext(Reader* reader) {
 
 byte Reader_peek(Reader* reader) {
     if (!Reader_hasNext(reader)) // check and load buffer if needed!
-        exit(EXIT_IO_READER_FAILURE);
+        exit(EXIT_IO_READER_NO_REMAINING_DATA);
 
     return reader->buffer[reader->bufferIndex];
 }
 
 byte Reader_next(Reader* reader) {
     if (!Reader_hasNext(reader)) // check and load buffer if needed!
-        exit(EXIT_IO_READER_FAILURE);
+        exit(EXIT_IO_READER_NO_REMAINING_DATA);
 
     const byte b = reader->buffer[reader->bufferIndex++];
 
@@ -113,9 +113,11 @@ byte Reader_next(Reader* reader) {
     return b;
 }
 
-void Reader_nextN(Reader* reader, byte* buffer, u32 count) {
-    for (u32 i = 0; i < count; i++)
+u32 Reader_nextN(Reader* reader, byte* buffer, u32 count) {
+    u32 i = 0;
+    for (; i < count && Reader_hasNext(reader); i++)
         buffer[i] = Reader_next(reader);
+    return i;
 }
 
 ////////////////////////////////////////////////////
