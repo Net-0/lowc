@@ -53,6 +53,92 @@ isize pwrite(const i32 fileDescriptor, const byte* buffer, const usize count, co
   return ret;
 }
 
+////////////////////////////////////////////////////
+// mmap-family flags
+
+#define PROT_NONE  0x0
+#define PROT_READ  0x1
+#define PROT_WRITE 0x2
+#define PROT_EXEC  0x4
+
+#define MAP_SHARED    0x01
+#define MAP_PRIVATE   0x02
+#define MAP_FIXED     0x10
+#define MAP_ANONYMOUS 0x20
+
+#define MREMAP_MAYMOVE 0x1
+#define MREMAP_FIXED   0x2
+
+#define MS_ASYNC      0x1
+#define MS_INVALIDATE 0x2
+#define MS_SYNC       0x4
+
+// Linux 'mmap' syscall
+isize mmap(byte* addr, const usize length, const i32 prot, const i32 flags, const i32 fileDescriptor, const isize offset) {
+  isize ret;
+  register i32 r10 __asm__("r10") = flags;
+  register i32 r8 __asm__("r8") = fileDescriptor;
+  register isize r9 __asm__("r9") = offset;
+  __asm__ volatile (
+    "syscall"
+    : "=a"(ret)
+    : "a"(9), "D"(addr), "S"(length), "d"(prot), "r"(r10), "r"(r8), "r"(r9)
+    : "rcx", "r11", "memory"
+  );
+  return ret;
+}
+
+// Linux 'munmap' syscall
+isize munmap(byte* addr, const usize length) {
+  isize ret;
+  __asm__ volatile (
+    "syscall"
+    : "=a"(ret)
+    : "a"(11), "D"(addr), "S"(length)
+    : "rcx", "r11", "memory"
+  );
+  return ret;
+}
+
+// Linux 'mprotect' syscall
+isize mprotect(byte* addr, const usize length, const i32 prot) {
+  isize ret;
+  __asm__ volatile (
+    "syscall"
+    : "=a"(ret)
+    : "a"(10), "D"(addr), "S"(length), "d"(prot)
+    : "rcx", "r11", "memory"
+  );
+  return ret;
+}
+
+// Linux 'mremap' syscall
+isize mremap(byte* oldAddress, const usize oldSize, const usize newSize, const i32 flags) {
+  isize ret;
+  register i32 r10 __asm__("r10") = flags;
+  __asm__ volatile (
+    "syscall"
+    : "=a"(ret)
+    : "a"(25), "D"(oldAddress), "S"(oldSize), "d"(newSize), "r"(r10)
+    : "rcx", "r11", "memory"
+  );
+  return ret;
+}
+
+// Linux 'msync' syscall
+isize msync(byte* addr, const usize length, const i32 flags) {
+  isize ret;
+  __asm__ volatile (
+    "syscall"
+    : "=a"(ret)
+    : "a"(26), "D"(addr), "S"(length), "d"(flags)
+    : "rcx", "r11", "memory"
+  );
+  return ret;
+}
+
+////////////////////////////////////////////////////
+
 // Linux 'exit' syscall
 void __attribute__((noreturn)) exit(const u8 code) {
   __asm__ volatile (
