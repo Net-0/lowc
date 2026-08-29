@@ -3,6 +3,8 @@
 
 #include "./types.c"
 #include "./linux.c"
+#include "./math.c"
+#include "./memory.c"
 
 #define IO_BUFFER_CAPACITY 8192
 
@@ -80,12 +82,20 @@ struct Reader {
 
 #define Reader_new(fd) (Reader) { .fileDescriptor = fd, .bufferLength = 0, .bufferIndex = 1, .position = INITIAL_POSITION }
 
+void Reader_fill(Reader* reader) {
+    // 1. Move unread buffered data to the begin of the buffer
+    const u16 remaining = reader->bufferLength - min(reader->bufferLength, reader->bufferIndex);
+    memmove(reader->buffer, reader->buffer+reader->bufferIndex, remaining);
+
+    // 2. Fill the remaining space in the buffer
+    reader->bufferLength = remaining + read(reader->fileDescriptor, reader->buffer+remaining, IO_BUFFER_CAPACITY - remaining);
+    reader->bufferIndex = 0;
+}
+
 boolean Reader_hasNext(Reader* reader) {
     // Ensure that the buffer is loaded
-    if (reader->bufferLength < reader->bufferIndex) {
-        reader->bufferLength = read(reader->fileDescriptor, reader->buffer, IO_BUFFER_CAPACITY);
-        reader->bufferIndex = 0;
-    }
+    if (reader->bufferLength < reader->bufferIndex)
+        Reader_fill(reader);
 
     return reader->bufferIndex < reader->bufferLength;
 }
