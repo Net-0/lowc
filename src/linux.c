@@ -27,9 +27,17 @@
 #define O_PATH      0b00000000001000000000000000000000
 #define O_TMPFILE   0b00000000010000010000000000000000
 
-#define SEEK_SET 0
-#define SEEK_CUR 1
-#define SEEK_END 2
+////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////
+// seek constants
+
+typedef enum SeekWhence SeekWhence;
+enum SeekWhence {
+    SEEK_SET = 0,
+    SEEK_CUR = 1,
+    SEEK_END = 2,
+};
 
 ////////////////////////////////////////////////////
 
@@ -114,7 +122,7 @@ isize close(const i32 fileDescriptor) {
 // Linux 'lseek' syscall
 //
 // Move fileDescriptor's file position to offset relative to whence, returning the resulting position
-isize lseek(const i32 fileDescriptor, const isize offset, const i32 whence) {
+isize lseek(const i32 fileDescriptor, const isize offset, const SeekWhence whence) {
   isize ret;
   __asm__ volatile (
     "syscall"
