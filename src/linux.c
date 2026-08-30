@@ -6,44 +6,44 @@
 ////////////////////////////////////////////////////
 // file flags
 
-#define O_RDONLY    0b00000000000000000000000000000000
-#define O_WRONLY    0b00000000000000000000000000000001
-#define O_RDWR      0b00000000000000000000000000000010
-#define O_CREAT     0b00000000000000000000000001000000
-#define O_EXCL      0b00000000000000000000000010000000
-#define O_NOCTTY    0b00000000000000000000000100000000
-#define O_TRUNC     0b00000000000000000000001000000000
-#define O_APPEND    0b00000000000000000000010000000000
-#define O_NONBLOCK  0b00000000000000000000100000000000
-#define O_DSYNC     0b00000000000000000001000000000000
-#define O_ASYNC     0b00000000000000000010000000000000
-#define O_DIRECT    0b00000000000000000100000000000000
-#define O_LARGEFILE 0b00000000000000001000000000000000
-#define O_DIRECTORY 0b00000000000000010000000000000000
-#define O_NOFOLLOW  0b00000000000000100000000000000000
-#define O_NOATIME   0b00000000000001000000000000000000
-#define O_CLOEXEC   0b00000000000010000000000000000000
-#define O_SYNC      0b00000000000100000001000000000000
-#define O_PATH      0b00000000001000000000000000000000
-#define O_TMPFILE   0b00000000010000010000000000000000
+const i32 O_RDONLY    = 0b00000000000000000000000000000000; // open for reading only
+const i32 O_WRONLY    = 0b00000000000000000000000000000001; // open for writing only
+const i32 O_RDWR      = 0b00000000000000000000000000000010; // open for reading and writing
+const i32 O_CREAT     = 0b00000000000000000000000001000000; // create the file if it doesn't exist
+const i32 O_EXCL      = 0b00000000000000000000000010000000; // with O_CREAT, fail if the file already exists
+const i32 O_NOCTTY    = 0b00000000000000000000000100000000; // don't make this file the process's controlling terminal
+const i32 O_TRUNC     = 0b00000000000000000000001000000000; // truncate the file to zero length if it exists
+const i32 O_APPEND    = 0b00000000000000000000010000000000; // always write at the end of the file
+const i32 O_NONBLOCK  = 0b00000000000000000000100000000000; // open/operate in non-blocking mode
+const i32 O_DSYNC     = 0b00000000000000000001000000000000; // writes complete once the data (not necessarily metadata) is flushed
+const i32 O_ASYNC     = 0b00000000000000000010000000000000; // enable signal-driven I/O
+const i32 O_DIRECT    = 0b00000000000000000100000000000000; // minimize cache effects of I/O to/from this file
+const i32 O_LARGEFILE = 0b00000000000000001000000000000000; // legacy 32-bit large-file flag, no-op on 64-bit
+const i32 O_DIRECTORY = 0b00000000000000010000000000000000; // fail unless path is a directory
+const i32 O_NOFOLLOW  = 0b00000000000000100000000000000000; // fail if path is a symbolic link
+const i32 O_NOATIME   = 0b00000000000001000000000000000000; // don't update the file's last access time on read
+const i32 O_CLOEXEC   = 0b00000000000010000000000000000000; // close this fd automatically on execve
+const i32 O_SYNC      = 0b00000000000100000001000000000000; // writes complete once both data and metadata are flushed
+const i32 O_PATH      = 0b00000000001000000000000000000000; // obtain a fd for path-based operations without opening the file itself
+const i32 O_TMPFILE   = 0b00000000010000010000000000000000; // create an unnamed temporary file within the given directory
 
 ////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////
 // file mode (permission bits, used with O_CREAT/O_TMPFILE)
 
-#define S_IRUSR 0b00000000000000000000000100000000
-#define S_IWUSR 0b00000000000000000000000010000000
-#define S_IXUSR 0b00000000000000000000000001000000
-#define S_IRGRP 0b00000000000000000000000000100000
-#define S_IWGRP 0b00000000000000000000000000010000
-#define S_IXGRP 0b00000000000000000000000000001000
-#define S_IROTH 0b00000000000000000000000000000100
-#define S_IWOTH 0b00000000000000000000000000000010
-#define S_IXOTH 0b00000000000000000000000000000001
-#define S_ISUID 0b00000000000000000000100000000000
-#define S_ISGID 0b00000000000000000000010000000000
-#define S_ISVTX 0b00000000000000000000001000000000
+const i32 S_IRUSR = 0b00000000000000000000000100000000; // owner read permission
+const i32 S_IWUSR = 0b00000000000000000000000010000000; // owner write permission
+const i32 S_IXUSR = 0b00000000000000000000000001000000; // owner execute permission
+const i32 S_IRGRP = 0b00000000000000000000000000100000; // group read permission
+const i32 S_IWGRP = 0b00000000000000000000000000010000; // group write permission
+const i32 S_IXGRP = 0b00000000000000000000000000001000; // group execute permission
+const i32 S_IROTH = 0b00000000000000000000000000000100; // other read permission
+const i32 S_IWOTH = 0b00000000000000000000000000000010; // other write permission
+const i32 S_IXOTH = 0b00000000000000000000000000000001; // other execute permission
+const i32 S_ISUID = 0b00000000000000000000100000000000; // set-user-ID on execute
+const i32 S_ISGID = 0b00000000000000000000010000000000; // set-group-ID on execute
+const i32 S_ISVTX = 0b00000000000000000000001000000000; // sticky bit (restrict deletion within a directory)
 
 ////////////////////////////////////////////////////
 
@@ -52,9 +52,9 @@
 
 typedef enum SeekWhence SeekWhence;
 enum SeekWhence {
-    SEEK_SET = 0,
-    SEEK_CUR = 1,
-    SEEK_END = 2,
+    SEEK_SET = 0, // offset is absolute, measured from the start of the file
+    SEEK_CUR = 1, // offset is relative to the current file position
+    SEEK_END = 2, // offset is relative to the end of the file
 };
 
 ////////////////////////////////////////////////////
@@ -62,22 +62,22 @@ enum SeekWhence {
 ////////////////////////////////////////////////////
 // mmap-family flags
 
-#define PROT_NONE      0b00000000000000000000000000000000
-#define PROT_READ      0b00000000000000000000000000000001
-#define PROT_WRITE     0b00000000000000000000000000000010
-#define PROT_EXEC      0b00000000000000000000000000000100
+const i32 PROT_NONE     = 0b00000000000000000000000000000000; // the mapping cannot be accessed
+const i32 PROT_READ     = 0b00000000000000000000000000000001; // the mapping can be read
+const i32 PROT_WRITE    = 0b00000000000000000000000000000010; // the mapping can be written
+const i32 PROT_EXEC     = 0b00000000000000000000000000000100; // the mapping can be executed
 
-#define MAP_SHARED     0b00000000000000000000000000000001
-#define MAP_PRIVATE    0b00000000000000000000000000000010
-#define MAP_FIXED      0b00000000000000000000000000010000
-#define MAP_ANONYMOUS  0b00000000000000000000000000100000
+const i32 MAP_SHARED    = 0b00000000000000000000000000000001; // writes go back to the file and are visible to other mappers
+const i32 MAP_PRIVATE   = 0b00000000000000000000000000000010; // writes are copy-on-write, private to this mapping
+const i32 MAP_FIXED     = 0b00000000000000000000000000010000; // place the mapping at exactly the given address
+const i32 MAP_ANONYMOUS = 0b00000000000000000000000000100000; // the mapping isn't backed by a file
 
-#define MREMAP_MAYMOVE 0b00000000000000000000000000000001
-#define MREMAP_FIXED   0b00000000000000000000000000000010
+const i32 MREMAP_MAYMOVE = 0b00000000000000000000000000000001; // allow the kernel to relocate the mapping if it can't grow in place
+const i32 MREMAP_FIXED   = 0b00000000000000000000000000000010; // move the mapping to exactly the given address (requires MREMAP_MAYMOVE)
 
-#define MS_ASYNC       0b00000000000000000000000000000001
-#define MS_INVALIDATE  0b00000000000000000000000000000010
-#define MS_SYNC        0b00000000000000000000000000000100
+const i32 MS_ASYNC       = 0b00000000000000000000000000000001; // schedule the flush and return immediately
+const i32 MS_INVALIDATE  = 0b00000000000000000000000000000010; // invalidate other mappings' cached copies of the flushed pages
+const i32 MS_SYNC        = 0b00000000000000000000000000000100; // block until the flush completes
 
 ////////////////////////////////////////////////////
 
