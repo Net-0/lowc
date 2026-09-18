@@ -51,19 +51,11 @@ const boolean false = 0;
 enum ExitStatus {
     EXIT_SUCCESS = 0,
     EXIT_FAILURE,
-    EXIT_STDIN_READ_FAILURE,
-    EXIT_STDIN_TOO_BIG,
-    EXIT_UNEXPECTED_TOKEN
+    EXIT_IO_READER_FAILURE,
+    EXIT_IO_WRITER_FAILURE,
+    EXIT_TOKENIZE_UNEXPECTED_TOKEN,
+    EXIT_PARSER_BAD_KEYWORD
 };
-
-////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////
-// Standard IO
-
-const i32 stdin = 0;
-const i32 stdout = 1;
-const i32 stderr = 2;
 
 ////////////////////////////////////////////////////
 
