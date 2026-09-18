@@ -30,6 +30,7 @@ void tokenize(Reader* reader, Writer* writer) {
 
 // Binary entrypoint if we want only to test the tokenization
 void _start(void) {
+    __asm__ __volatile__ ("and $-16, %%rsp" ::: "memory"); // Fix the stack for the System V constraints
     tokenize(stdin, stdout);
     exit(EXIT_SUCCESS);
 }
