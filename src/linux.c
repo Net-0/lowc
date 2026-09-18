@@ -228,4 +228,18 @@ void __attribute__((noreturn)) exit(const u8 code) {
   __builtin_unreachable();
 }
 
+// Linux 'ftruncate' syscall
+//
+// Resize fileDescriptor's file to exactly length bytes, extending it with zeros or discarding trailing data as needed
+isize ftruncate(const i32 fileDescriptor, const isize length) {
+  isize ret;
+  __asm__ volatile (
+    "syscall"
+    : "=a"(ret)
+    : "a"(77), "D"(fileDescriptor), "S"(length)
+    : "rcx", "r11", "memory"
+  );
+  return ret;
+}
+
 #endif
