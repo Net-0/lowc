@@ -41,6 +41,8 @@
 ////////////////////////////////////////////////////
 
 // Linux 'read' syscall
+//
+// Read up to count bytes from fileDescriptor into buffer, returning the number of bytes actually read
 isize read(const i32 fileDescriptor, const byte* buffer, const usize count) {
   isize ret;
   __asm__ volatile (
@@ -53,6 +55,8 @@ isize read(const i32 fileDescriptor, const byte* buffer, const usize count) {
 }
 
 // Linux 'write' syscall
+//
+// Write count bytes from buffer to fileDescriptor, returning the number of bytes actually written
 isize write(const i32 fileDescriptor, const byte* buffer, const usize count) {
   isize ret;
   __asm__ volatile (
@@ -65,6 +69,8 @@ isize write(const i32 fileDescriptor, const byte* buffer, const usize count) {
 }
 
 // Linux 'open' syscall
+//
+// Open (or create) the file at path with the given flags/mode, returning a new file descriptor
 isize open(const byte* path, const i32 flags, const i32 mode) {
   isize ret;
   __asm__ volatile (
@@ -77,6 +83,8 @@ isize open(const byte* path, const i32 flags, const i32 mode) {
 }
 
 // Linux 'close' syscall
+//
+// Close fileDescriptor, releasing it
 isize close(const i32 fileDescriptor) {
   isize ret;
   __asm__ volatile (
@@ -89,6 +97,8 @@ isize close(const i32 fileDescriptor) {
 }
 
 // Linux 'lseek' syscall
+//
+// Move fileDescriptor's file position to offset relative to whence, returning the resulting position
 isize lseek(const i32 fileDescriptor, const isize offset, const i32 whence) {
   isize ret;
   __asm__ volatile (
@@ -101,6 +111,8 @@ isize lseek(const i32 fileDescriptor, const isize offset, const i32 whence) {
 }
 
 // Linux 'pread64' syscall
+//
+// Read up to count bytes from fileDescriptor into buffer starting at offset, without moving the file position
 isize pread(const i32 fileDescriptor, const byte* buffer, const usize count, const isize offset) {
   isize ret;
   register isize r10 __asm__("r10") = offset;
@@ -114,6 +126,8 @@ isize pread(const i32 fileDescriptor, const byte* buffer, const usize count, con
 }
 
 // Linux 'pwrite64' syscall
+//
+// Write count bytes from buffer to fileDescriptor starting at offset, without moving the file position
 isize pwrite(const i32 fileDescriptor, const byte* buffer, const usize count, const isize offset) {
   isize ret;
   register isize r10 __asm__("r10") = offset;
@@ -127,7 +141,10 @@ isize pwrite(const i32 fileDescriptor, const byte* buffer, const usize count, co
 }
 
 // Linux 'mmap' syscall
-isize mmap(byte* addr, const usize length, const i32 prot, const i32 flags, const i32 fileDescriptor, const isize offset) {
+//
+// Map length bytes of fileDescriptor (or anonymous memory, if MAP_ANONYMOUS) at offset into memory with the given prot/flags;
+// hint is only a placement suggestion unless flags includes MAP_FIXED. Returns the mapped address
+isize mmap(byte* hint, const usize length, const i32 prot, const i32 flags, const i32 fileDescriptor, const isize offset) {
   isize ret;
   register i32 r10 __asm__("r10") = flags;
   register i32 r8 __asm__("r8") = fileDescriptor;
@@ -135,13 +152,15 @@ isize mmap(byte* addr, const usize length, const i32 prot, const i32 flags, cons
   __asm__ volatile (
     "syscall"
     : "=a"(ret)
-    : "a"(9), "D"(addr), "S"(length), "d"(prot), "r"(r10), "r"(r8), "r"(r9)
+    : "a"(9), "D"(hint), "S"(length), "d"(prot), "r"(r10), "r"(r8), "r"(r9)
     : "rcx", "r11", "memory"
   );
   return ret;
 }
 
 // Linux 'munmap' syscall
+//
+// Unmap the length-byte mapping starting at addr
 isize munmap(byte* addr, const usize length) {
   isize ret;
   __asm__ volatile (
@@ -154,6 +173,8 @@ isize munmap(byte* addr, const usize length) {
 }
 
 // Linux 'mprotect' syscall
+//
+// Change the access permissions of the length-byte mapping starting at addr to prot
 isize mprotect(byte* addr, const usize length, const i32 prot) {
   isize ret;
   __asm__ volatile (
@@ -166,6 +187,8 @@ isize mprotect(byte* addr, const usize length, const i32 prot) {
 }
 
 // Linux 'mremap' syscall
+//
+// Resize the oldSize-byte mapping at oldAddress to newSize, relocating it if it can't grow in place and flags includes MREMAP_MAYMOVE
 isize mremap(byte* oldAddress, const usize oldSize, const usize newSize, const i32 flags) {
   isize ret;
   register i32 r10 __asm__("r10") = flags;
@@ -179,6 +202,8 @@ isize mremap(byte* oldAddress, const usize oldSize, const usize newSize, const i
 }
 
 // Linux 'msync' syscall
+//
+// Flush changes made to the length-byte mapping starting at addr back to its backing file
 isize msync(byte* addr, const usize length, const i32 flags) {
   isize ret;
   __asm__ volatile (
@@ -191,6 +216,8 @@ isize msync(byte* addr, const usize length, const i32 flags) {
 }
 
 // Linux 'exit' syscall
+//
+// Terminate the process immediately with the given exit code
 void __attribute__((noreturn)) exit(const u8 code) {
   __asm__ volatile (
     "syscall"
