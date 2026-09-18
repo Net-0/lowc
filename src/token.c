@@ -180,13 +180,22 @@ TokenReader TokenReader_new(Reader* reader) {
     return (TokenReader) { .reader = reader, .bufferLength = 0, .bufferIndex = 1 };
 }
 
+void TokenReader_fill(TokenReader* tokenReader) {
+    // 1. Move unread buffered data to the begin of the buffer
+    const u16 remaining = tokenReader->bufferLength - min(tokenReader->bufferLength, tokenReader->bufferIndex);
+    memmove((byte*) tokenReader->buffer, (byte*) tokenReader->buffer+(tokenReader->bufferIndex*sizeof(Token)), remaining*sizeof(Token));
+
+    // 2. Fill the remaining space in the buffer
+    const u32 n = Reader_nextN(tokenReader->reader, (byte*) tokenReader->buffer+(remaining*sizeof(Token)), sizeof(Token)*(TOKEN_IO_BUFFER_CAPACITY-remaining));
+    if (n % sizeof(Token) != 0)
+        exit(EXIT_TOKEN_READER_MALFORMED_DATA);
+    tokenReader->bufferLength = remaining + (n / sizeof(Token));
+    tokenReader->bufferIndex = 0;
+}
+
 boolean TokenReader_hasNext(TokenReader* tokenReader) {
-    if (tokenReader->bufferLength < tokenReader->bufferIndex) {
-        const u32 n = Reader_nextN(tokenReader->reader, (byte*) tokenReader->buffer, sizeof(Token)*TOKEN_IO_BUFFER_CAPACITY);
-        if (n % sizeof(Token) != 0)
-            exit(EXIT_TOKEN_READER_MALFORMED_DATA);
-        tokenReader->bufferLength = n / sizeof(Token);
-    }
+    if (tokenReader->bufferLength < tokenReader->bufferIndex)
+        TokenReader_fill(tokenReader);
 
     return tokenReader->bufferIndex < tokenReader->bufferLength;
 }
