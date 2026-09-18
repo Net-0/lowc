@@ -1,13 +1,14 @@
-#ifndef TOKENIZER_C
-#define TOKENIZER_C
+#ifndef LEX_C
+#define LEX_C
 
 #include "../lexer.c"
 #include "../types.c"
 
 // Tokenize from a input fileDescriptor and write the binary content of the tokens into a output fileDescriptr.
-void tokenize(Reader* reader, Writer* writer) {
+void lex(Reader* reader, Writer* writer) {
     // Note: this shit is dangerous as fuck, unpacked structs have variadic final size (based on the compiler output), but guess we're going to deal with it xD
     Lexer lexer = Lexer_new(reader);
+    TokenWriter tokenWriter = TokenWriter_new(writer);
 
     for (;;) {
         const Token token = Lexer_next(&lexer);
@@ -23,15 +24,15 @@ void tokenize(Reader* reader, Writer* writer) {
             exit(EXIT_TOKENIZE_UNEXPECTED_TOKEN);
         }
 
-        Writer_writeN(writer, (byte*) &token, sizeof(token));
+        TokenWriter_write(&tokenWriter, token);
     }
-    Writer_flush(writer);
+    TokenWriter_flush(&tokenWriter);
 }
 
 // Binary entrypoint if we want only to test the tokenization
 void _start(void) {
     __asm__ __volatile__ ("and $-16, %%rsp" ::: "memory"); // Fix the stack for the System V constraints
-    tokenize(stdin, stdout);
+    lex(stdin, stdout);
     exit(EXIT_SUCCESS);
 }
 

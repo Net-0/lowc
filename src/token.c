@@ -2,6 +2,8 @@
 #define TOKEN_C
 
 #include "./position.c"
+#include "./io.c"
+#include "./memory.c"
 
 typedef enum TokenType TokenType;
 enum TokenType {
@@ -109,7 +111,7 @@ void TokenType_write(const TokenType tokenType, Writer* writer) {
     }
 }
 
-////////////////////////
+////////////////////////////////////////////////////
 
 typedef enum KeywordType KeywordType;
 enum KeywordType {
@@ -136,7 +138,7 @@ void KeywordType_write(const KeywordType keywordType, Writer* writer) {
     }
 }
 
-////////////////////////
+////////////////////////////////////////////////////
 
 typedef struct Token Token;
 struct Token {
@@ -158,6 +160,71 @@ void Token_write(const Token* token, Writer* writer) {
     Writer_writeString(writer, ", end=");
     Position_write(&token->end, writer);
     Writer_writeString(writer, ")");
+}
+
+////////////////////////////////////////////////////
+
+// Note: this shit is dangerous as fuck, unpacked structs have variadic final size (based on the compiler output), but guess we're going to deal with it xD
+
+#define TOKEN_IO_BUFFER_CAPACITY 256
+
+typedef struct TokenReader TokenReader;
+struct TokenReader {
+    Reader* reader;
+    Token buffer[TOKEN_IO_BUFFER_CAPACITY];
+    u16 bufferLength;
+    u16 bufferIndex;
+};
+
+TokenReader TokenReader_new(Reader* reader) {
+    return (TokenReader) { .reader = reader, .bufferLength = 0, .bufferIndex = 1 };
+}
+
+boolean TokenReader_hasNext(TokenReader* tokenReader) {
+    if (tokenReader->bufferLength < tokenReader->bufferIndex) {
+        const u32 n = Reader_nextN(tokenReader->reader, (byte*) tokenReader->buffer, sizeof(Token)*TOKEN_IO_BUFFER_CAPACITY);
+        if (n % sizeof(Token) != 0)
+            exit(EXIT_TOKEN_READER_MALFORMED_DATA);
+        tokenReader->bufferLength = n / sizeof(Token);
+    }
+
+    return tokenReader->bufferIndex < tokenReader->bufferLength;
+}
+
+Token TokenReader_peek(TokenReader* tokenReader) {
+    if (!TokenReader_hasNext(tokenReader)) // check and load buffer if needed!
+        exit(EXIT_TOKEN_READER_NO_REMAINING_DATA);
+
+    return ((Token*) &tokenReader->buffer)[tokenReader->bufferIndex];
+}
+
+Token TokenReader_next(TokenReader* tokenReader) {
+    if (!TokenReader_hasNext(tokenReader)) // check and load buffer if needed!
+        exit(EXIT_TOKEN_READER_NO_REMAINING_DATA);
+
+    return ((Token*) &tokenReader->buffer)[tokenReader->bufferIndex++];
+}
+
+typedef struct TokenWriter TokenWriter;
+struct TokenWriter {
+    Writer* writer;
+    Token buffer[TOKEN_IO_BUFFER_CAPACITY];
+    u16 bufferIndex;
+};
+
+TokenWriter TokenWriter_new(Writer* writer) {
+    return (TokenWriter) { .writer = writer, .bufferIndex = 0 };
+}
+
+void TokenWriter_flush(TokenWriter* tokenWriter) {
+    Writer_writeN(tokenWriter->writer, (byte*) tokenWriter->buffer, tokenWriter->bufferIndex*sizeof(Token));
+    Writer_flush(tokenWriter->writer);
+}
+
+void TokenWriter_write(TokenWriter* tokenWriter, const Token token) {
+    if (TOKEN_IO_BUFFER_CAPACITY < tokenWriter->bufferIndex)
+        TokenWriter_flush(tokenWriter);
+    tokenWriter->buffer[tokenWriter->bufferIndex++] = token;
 }
 
 #endif
