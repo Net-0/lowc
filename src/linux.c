@@ -27,6 +27,32 @@ isize write(const i32 fileDescriptor, const byte* buffer, const usize count) {
   return ret;
 }
 
+// Linux 'pread64' syscall
+isize pread(const i32 fileDescriptor, const byte* buffer, const usize count, const isize offset) {
+  isize ret;
+  register isize r10 __asm__("r10") = offset;
+  __asm__ volatile (
+    "syscall"
+    : "=a"(ret)
+    : "a"(17), "D"(fileDescriptor), "S"(buffer), "d"(count), "r"(r10)
+    : "rcx", "r11", "memory"
+  );
+  return ret;
+}
+
+// Linux 'pwrite64' syscall
+isize pwrite(const i32 fileDescriptor, const byte* buffer, const usize count, const isize offset) {
+  isize ret;
+  register isize r10 __asm__("r10") = offset;
+  __asm__ volatile (
+    "syscall"
+    : "=a"(ret)
+    : "a"(18), "D"(fileDescriptor), "S"(buffer), "d"(count), "r"(r10)
+    : "rcx", "r11", "memory"
+  );
+  return ret;
+}
+
 // Linux 'exit' syscall
 void __attribute__((noreturn)) exit(const u8 code) {
   __asm__ volatile (
