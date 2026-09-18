@@ -28,7 +28,7 @@ isize write(const i32 fileDescriptor, const byte* buffer, const usize count) {
 }
 
 // Linux 'exit' syscall
-void exit(const u8 code) {
+void __attribute__((noreturn)) exit(const u8 code) {
   __asm__ volatile (
     "syscall"
     :
@@ -36,13 +36,6 @@ void exit(const u8 code) {
     : "rcx", "r11", "memory"
   );
   __builtin_unreachable();
-}
-
-inline boolean memeq(const byte* p1, const byte* p2, const u32 n) {
-  for (u32 i = 0; i < n; i++)
-    if (p1[i] != p2[i])
-      return false;
-  return true;
 }
 
 #endif
